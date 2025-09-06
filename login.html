@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>TechCloud - Login</title>
+		<!-- Description, Keywords and Author -->
+		<meta name="description" content="Login to your TechCloud account">
+		<meta name="keywords" content="TechCloud,Login,Authentication">
+		<meta name="author" content="TechCloud">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<!-- Styles -->
+		<!-- Bootstrap CSS -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<!-- Font awesome CSS -->
+		<link href="css/font-awesome.min.css" rel="stylesheet">		
+		<!-- Custom CSS -->
+		<link href="css/style.css" rel="stylesheet">
+		
+		<!-- Supabase -->
+		<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+		
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="#">
+	</head>
+	
+	<body>
+	
+		<div class="wrapper">
+		
+			<!-- header -->
+			<header>
+				<!-- navigation -->
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container">
+						<!-- Brand and toggle get grouped for better mobile display -->
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href="#"><img class="img-responsive" src="img/logo.png" alt="Logo" /></a>
+						</div>
+
+						<!-- Collect the nav links, forms, and other content for toggling -->
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+							<ul class="nav navbar-nav navbar-right">
+								<li><a href="registration.html">Signup</a></li>
+								<li><a href="login.html">Login</a></li>
+								<li><a href="index.html">Home</a></li>
+							</ul>
+						</div><!-- /.navbar-collapse -->
+					</div><!-- /.container-fluid -->
+				</nav>
+			</header>
+			
+			<!-- banner -->
+			<div class="banner">
+				<div class="container">
+					<!-- form content / login area -->
+					<div class="login-area">
+						<!-- heading -->
+						<h3>Sign In, To Your Account</h3>
+						<form role="form" id="login-form">
+							<div class="form-group">
+								<input type="email" class="form-control" id="loginEmail" placeholder="Email" required>
+							</div>
+							<div class="form-group">
+								<input type="password" class="form-control" id="loginPassword" placeholder="Password" required>
+							</div>
+							<div class="checkbox form-group">
+								<label>
+									<input type="checkbox" id="rememberMe"> Remember me
+								</label>
+							</div>
+							<button type="submit" class="btn btn-default" id="loginBtn">
+								<span class="btn-text">Login</span>
+								<span class="btn-loading" style="display: none;">
+									<i class="fa fa-spinner fa-spin"></i> Signing in...
+								</span>
+							</button>
+						</form>
+						<div class="text-center" style="margin-top: 15px;">
+							<a href="#" id="forgotPasswordLink">Forgot your password?</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- banner end -->
+			
+			<!-- footer -->
+			<footer class="ffoot">
+				<div class="container">
+					<p><a href="#">Home</a> | <a href="#work">works</a> | <a href="#team">Team</a> | <a href="#contact">Contact</a></p>
+					<div class="social">
+						<a href="#"><i class="fa fa-facebook"></i></a>
+						<a href="#"><i class="fa fa-twitter"></i></a>
+						<a href="#"><i class="fa fa-dribbble"></i></a>
+						<a href="#"><i class="fa fa-linkedin"></i></a>
+						<a href="#"><i class="fa fa-google-plus"></i></a>
+					</div>
+
+				</div>
+			</footer>
+
+		</div>
+		
+		
+		<!-- Javascript files -->
+		<!-- jQuery -->
+		<script src="js/jquery.js"></script>
+		<!-- Bootstrap JS -->
+		<script src="js/bootstrap.min.js"></script>
+		<!-- Respond JS for IE8 -->
+		<script src="js/respond.min.js"></script>
+		<!-- HTML5 Support for IE -->
+		<script src="js/html5shiv.js"></script>
+		<!-- Supabase Config -->
+		<script src="js/supabase-config.js"></script>
+		<!-- Session Manager -->
+		<script src="js/session-manager.js"></script>
+		<!-- Auth Module -->
+		<script src="js/auth.js"></script>
+		<!-- Custom JS -->
+		<script src="js/custom.js"></script>
+		
+		<!-- Login Page Script -->
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const loginForm = document.getElementById('login-form');
+				const loginBtn = document.getElementById('loginBtn');
+				const btnText = loginBtn.querySelector('.btn-text');
+				const btnLoading = loginBtn.querySelector('.btn-loading');
+				const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+				// Handle login form submission
+				loginForm.addEventListener('submit', async function(e) {
+					e.preventDefault();
+					
+					const email = document.getElementById('loginEmail').value;
+					const password = document.getElementById('loginPassword').value;
+					const rememberMe = document.getElementById('rememberMe').checked;
+
+					if (!email || !password) {
+						authManager.showMessage('Please fill in all fields', 'error');
+						return;
+					}
+
+					// Show loading state
+					btnText.style.display = 'none';
+					btnLoading.style.display = 'inline';
+					loginBtn.disabled = true;
+
+					// Attempt login with remember me option
+					const result = await authManager.signIn(email, password, rememberMe);
+
+					// Reset button state
+					btnText.style.display = 'inline';
+					btnLoading.style.display = 'none';
+					loginBtn.disabled = false;
+
+					if (result.success) {
+						// Clear form (but keep email if remember me is checked)
+						if (!rememberMe) {
+							loginForm.reset();
+						} else {
+							document.getElementById('loginPassword').value = '';
+						}
+					}
+				});
+
+				// Pre-fill email if remembered
+				const rememberedEmail = localStorage.getItem('techcloud-user-email');
+				const rememberMeChecked = localStorage.getItem('techcloud-remember-me') === 'true';
+				
+				if (rememberedEmail && rememberMeChecked) {
+					document.getElementById('loginEmail').value = rememberedEmail;
+					document.getElementById('rememberMe').checked = true;
+				}
+
+				// Handle forgot password
+				forgotPasswordLink.addEventListener('click', async function(e) {
+					e.preventDefault();
+					
+					const email = document.getElementById('loginEmail').value;
+					if (!email) {
+						authManager.showMessage('Please enter your email address first', 'error');
+						return;
+					}
+
+					const result = await authManager.resetPassword(email);
+					if (result.success) {
+						authManager.showMessage('Password reset email sent! Check your inbox.', 'success');
+					}
+				});
+
+				// Redirect if already logged in (async check)
+				if (authManager) {
+					authManager.isAuthenticated().then(isAuth => {
+						if (isAuth) {
+							window.location.href = 'index.html';
+						}
+					}).catch(error => {
+						console.error('Auth check error:', error);
+					});
+				}
+			});
+		</script>
+	</body>	
+</html>

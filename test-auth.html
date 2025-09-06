@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>TechCloud - Authentication Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font awesome CSS -->
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            color: #28a745;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 15px;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fa fa-cog"></i> TechCloud Authentication Test</h1>
+        <p>This page will help you test if Supabase authentication is working correctly.</p>
+        
+        <!-- Connection Test -->
+        <div class="test-section">
+            <h3>1. Supabase Connection Test</h3>
+            <button onclick="testConnection()" class="btn btn-primary">Test Connection</button>
+            <div id="connectionResult"></div>
+        </div>
+        
+        <!-- Current User Status -->
+        <div class="test-section">
+            <h3>2. Current User Status</h3>
+            <button onclick="checkCurrentUser()" class="btn btn-info">Check Current User</button>
+            <div id="userStatusResult"></div>
+        </div>
+        
+        <!-- Test Registration -->
+        <div class="test-section">
+            <h3>3. Test Registration</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" id="testFullName" class="form-control" placeholder="Full Name" value="Test User">
+                </div>
+                <div class="col-md-6">
+                    <input type="email" id="testEmail" class="form-control" placeholder="Email" value="test@example.com">
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-md-6">
+                    <input type="password" id="testPassword" class="form-control" placeholder="Password" value="testpass123">
+                </div>
+                <div class="col-md-6">
+                    <button onclick="testRegistration()" class="btn btn-success">Test Registration</button>
+                </div>
+            </div>
+            <div id="registrationResult"></div>
+        </div>
+        
+        <!-- Test Login -->
+        <div class="test-section">
+            <h3>4. Test Login</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Email" value="test@example.com">
+                </div>
+                <div class="col-md-6">
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Password" value="testpass123">
+                </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <button onclick="testLogin()" class="btn btn-warning">Test Login</button>
+                <button onclick="testLogout()" class="btn btn-danger">Test Logout</button>
+            </div>
+            <div id="loginResult"></div>
+        </div>
+        
+        <!-- Test Password Reset -->
+        <div class="test-section">
+            <h3>5. Test Password Reset</h3>
+            <div class="row">
+                <div class="col-md-8">
+                    <input type="email" id="resetEmail" class="form-control" placeholder="Email for password reset" value="test@example.com">
+                </div>
+                <div class="col-md-4">
+                    <button onclick="testPasswordReset()" class="btn btn-secondary">Test Reset</button>
+                </div>
+            </div>
+            <div id="resetResult"></div>
+        </div>
+        
+        <!-- Auth State Listener -->
+        <div class="test-section">
+            <h3>6. Authentication State Changes</h3>
+            <p>This section will show real-time authentication state changes:</p>
+            <div id="authStateResult" class="info test-result">
+                Waiting for auth state changes...
+            </div>
+        </div>
+        
+        <!-- Configuration Check -->
+        <div class="test-section">
+            <h3>7. Configuration Check</h3>
+            <button onclick="checkConfiguration()" class="btn btn-info">Check Config</button>
+            <div id="configResult"></div>
+        </div>
+    </div>
+
+    <!-- Supabase Config -->
+    <script src="js/supabase-config.js"></script>
+    <!-- Session Manager -->
+    <script src="js/session-manager.js"></script>
+    <!-- Auth Module -->
+    <script src="js/auth.js"></script>
+    
+    <script>
+        // Test functions
+        async function testConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '<div class="info test-result">Testing connection...</div>';
+            
+            try {
+                // Test basic connection by getting the current session
+                const { data, error } = await supabaseClient.auth.getSession();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = '<div class="success test-result"><i class="fa fa-check"></i> Connection successful! Supabase client is working.</div>';
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error test-result"><i class="fa fa-times"></i> Connection failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function checkCurrentUser() {
+            const resultDiv = document.getElementById('userStatusResult');
+            resultDiv.innerHTML = '<div class="info test-result">Checking current user...</div>';
+            
+            try {
+                const { data: { user }, error } = await supabaseClient.auth.getUser();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (user) {
+                    resultDiv.innerHTML = `
+                        <div class="success test-result">
+                            <i class="fa fa-user"></i> User is logged in!
+                            <div class="user-info">
+                                <strong>ID:</strong> ${user.id}<br>
+                                <strong>Email:</strong> ${user.email}<br>
+                                <strong>Created:</strong> ${new Date(user.created_at).toLocaleString()}<br>
+                                <strong>Last Sign In:</strong> ${user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : 'N/A'}<br>
+                                <strong>Email Confirmed:</strong> ${user.email_confirmed_at ? 'Yes' : 'No'}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<div class="info test-result"><i class="fa fa-info"></i> No user is currently logged in.</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error test-result"><i class="fa fa-times"></i> Error checking user: ${error.message}</div>`;
+            }
+        }
+        
+        async function testRegistration() {
+            const resultDiv = document.getElementById('registrationResult');
+            const fullName = document.getElementById('testFullName').value;
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            if (!fullName || !email || !password) {
+                resultDiv.innerHTML = '<div class="error test-result">Please fill in all fields</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info test-result">Testing registration...</div>';
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: fullName
+                        }
+                    }
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (data.user && !data.user.email_confirmed_at) {
+                    resultDiv.innerHTML = '<div class="success test-result"><i class="fa fa-check"></i> Registration successful! Please check your email to confirm your account.</div>';
+                } else if (data.user) {
+                    resultDiv.innerHTML = '<div class="success test-result"><i class="fa fa-check"></i> Registration successful! User is logged in.</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error test-result"><i class="fa fa-times"></i> Registration failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                resultDiv.innerHTML = '<div class="error test-result">Please fill in email and password</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info test-result">Testing login...</div>';
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = '<div class="success test-result"><i class="fa fa-check"></i> Login successful!</div>';
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error test-result"><i class="fa fa-times"></i> Login failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function testLogout() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = '<div class="info test-result">Testing logout...</div>';
+            
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = '<div class="success test-result"><i class="fa fa-check"></i> Logout successful!</div>';
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error test-result"><i class="fa fa-times"></i> Logout failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function testPasswordReset() {
+            const resultDiv = document.getElementById('resetResult');
+            const email = document.getElementById('resetEmail').value;
+            
+            if (!email) {
+                resultDiv.innerHTML = '<div class="error test-result">Please enter an email address</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info test-result">Testing password reset...</div>';
+            
+            try {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/login.html'
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = '<div class="success test-result"><i class="fa fa-check"></i> Password reset email sent! Check your inbox.</div>';
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error test-result"><i class="fa fa-times"></i> Password reset failed: ${error.message}</div>`;
+            }
+        }
+        
+        function checkConfiguration() {
+            const resultDiv = document.getElementById('configResult');
+            
+            try {
+                const config = {
+                    url: SUPABASE_CONFIG.url,
+                    anonKey: SUPABASE_CONFIG.anonKey ? SUPABASE_CONFIG.anonKey.substring(0, 20) + '...' : 'Not set',
+                    clientExists: !!supabaseClient
+                };
+                
+                resultDiv.innerHTML = `
+                    <div class="info test-result">
+                        <strong>Configuration Status:</strong><br>
+                        <strong>Supabase URL:</strong> ${config.url}<br>
+                        <strong>Anon Key:</strong> ${config.anonKey}<br>
+                        <strong>Client Initialized:</strong> ${config.clientExists ? 'Yes' : 'No'}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error test-result"><i class="fa fa-times"></i> Configuration error: ${error.message}</div>`;
+            }
+        }
+        
+        // Listen for auth state changes
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            const resultDiv = document.getElementById('authStateResult');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let message = `[${timestamp}] Auth event: <strong>${event}</strong>`;
+            
+            if (session && session.user) {
+                message += ` - User: ${session.user.email}`;
+            }
+            
+            resultDiv.innerHTML = `<div class="info test-result">${message}</div>`;
+        });
+        
+        // Auto-run connection test on page load
+        window.addEventListener('load', function() {
+            testConnection();
+            checkCurrentUser();
+        });
+    </script>
+</body>
+</html>

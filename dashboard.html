@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>TechCloud - Dashboard</title>
+		<!-- Description, Keywords and Author -->
+		<meta name="description" content="Your TechCloud dashboard">
+		<meta name="keywords" content="TechCloud,Dashboard,User">
+		<meta name="author" content="TechCloud">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<!-- Styles -->
+		<!-- Bootstrap CSS -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<!-- Font awesome CSS -->
+		<link href="css/font-awesome.min.css" rel="stylesheet">		
+		<!-- Custom CSS -->
+		<link href="css/style.css" rel="stylesheet">
+		
+		<!-- Supabase -->
+		<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+		
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="#">
+	</head>
+	
+	<body>
+	
+		<div class="wrapper">
+		
+			<!-- header -->
+			<header>
+				<!-- navigation -->
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container">
+						<!-- Brand and toggle get grouped for better mobile display -->
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href="index.html"><img class="img-responsive" src="img/logo.png" alt="Logo" /></a>
+						</div>
+
+						<!-- Collect the nav links, forms, and other content for toggling -->
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+							<ul class="nav navbar-nav navbar-right">
+								<!-- Auth Links (shown when not logged in) -->
+								<li class="auth-links"><a href="registration.html">Signup</a></li>
+								<li class="auth-links"><a href="login.html">Login</a></li>
+								
+								<!-- User Info (shown when logged in) -->
+								<li class="dropdown user-info" style="display: none;">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+										<i class="fa fa-user"></i> <span class="user-name">User</span> <span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu" role="menu">
+										<li><a href="profile.html"><i class="fa fa-user"></i> Profile</a></li>
+										<li><a href="dashboard.html"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+										<li class="divider"></li>
+										<li><a href="#" id="logoutBtn"><i class="fa fa-sign-out"></i> Logout</a></li>
+									</ul>
+								</li>
+								
+								<li><a href="index.html">Home</a></li>
+							</ul>
+						</div><!-- /.navbar-collapse -->
+					</div><!-- /.container-fluid -->
+				</nav>
+			</header>
+			
+			<!-- banner -->
+			<div class="banner">
+				<div class="container">
+					<!-- Dashboard content -->
+					<div class="dashboard-area">
+						<!-- heading -->
+						<h3><i class="fa fa-dashboard"></i> Dashboard</h3>
+						<p class="welcome-message">Welcome back, <span id="dashboardUserName">User</span>!</p>
+						
+						<!-- Dashboard Stats -->
+						<div class="row" style="margin-bottom: 30px;">
+							<div class="col-md-3 col-sm-6">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<div class="row">
+											<div class="col-xs-3">
+												<i class="fa fa-user fa-5x"></i>
+											</div>
+											<div class="col-xs-9 text-right">
+												<div class="huge">Profile</div>
+												<div>Complete</div>
+											</div>
+										</div>
+									</div>
+									<a href="profile.html">
+										<div class="panel-footer">
+											<span class="pull-left">View Profile</span>
+											<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+											<div class="clearfix"></div>
+										</div>
+									</a>
+								</div>
+							</div>
+							<div class="col-md-3 col-sm-6">
+								<div class="panel panel-green">
+									<div class="panel-heading">
+										<div class="row">
+											<div class="col-xs-3">
+												<i class="fa fa-calendar fa-5x"></i>
+											</div>
+											<div class="col-xs-9 text-right">
+												<div class="huge" id="memberDays">0</div>
+												<div>Days as Member</div>
+											</div>
+										</div>
+									</div>
+									<a href="#events">
+										<div class="panel-footer">
+											<span class="pull-left">View Events</span>
+											<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+											<div class="clearfix"></div>
+										</div>
+									</a>
+								</div>
+							</div>
+							<div class="col-md-3 col-sm-6">
+								<div class="panel panel-yellow">
+									<div class="panel-heading">
+										<div class="row">
+											<div class="col-xs-3">
+												<i class="fa fa-book fa-5x"></i>
+											</div>
+											<div class="col-xs-9 text-right">
+												<div class="huge">Latest</div>
+												<div>Blogs</div>
+											</div>
+										</div>
+									</div>
+									<a href="#blogs">
+										<div class="panel-footer">
+											<span class="pull-left">View Blogs</span>
+											<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+											<div class="clearfix"></div>
+										</div>
+									</a>
+								</div>
+							</div>
+							<div class="col-md-3 col-sm-6">
+								<div class="panel panel-red">
+									<div class="panel-heading">
+										<div class="row">
+											<div class="col-xs-3">
+												<i class="fa fa-support fa-5x"></i>
+											</div>
+											<div class="col-xs-9 text-right">
+												<div class="huge">Help</div>
+												<div>& Support</div>
+											</div>
+										</div>
+									</div>
+									<a href="#support">
+										<div class="panel-footer">
+											<span class="pull-left">Get Help</span>
+											<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+											<div class="clearfix"></div>
+										</div>
+									</a>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Recent Activity -->
+						<div class="row">
+							<div class="col-md-8">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4><i class="fa fa-clock-o"></i> Recent Activity</h4>
+									</div>
+									<div class="panel-body">
+										<div class="list-group" id="recentActivity">
+											<div class="list-group-item">
+												<i class="fa fa-user text-primary"></i>
+												<strong>Account Created</strong>
+												<span class="pull-right text-muted" id="accountCreatedDate">Loading...</span>
+												<p class="list-group-item-text">Welcome to TechCloud! Your account has been successfully created.</p>
+											</div>
+											<div class="list-group-item">
+												<i class="fa fa-sign-in text-success"></i>
+												<strong>Last Login</strong>
+												<span class="pull-right text-muted" id="lastLoginDate">Loading...</span>
+												<p class="list-group-item-text">You successfully signed in to your account.</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4><i class="fa fa-info-circle"></i> Quick Info</h4>
+									</div>
+									<div class="panel-body">
+										<div class="list-group">
+											<div class="list-group-item">
+												<strong>Email:</strong><br>
+												<span id="userEmail">Loading...</span>
+											</div>
+											<div class="list-group-item">
+												<strong>Member Since:</strong><br>
+												<span id="memberSince">Loading...</span>
+											</div>
+											<div class="list-group-item">
+												<strong>Account Status:</strong><br>
+												<span class="label label-success">Active</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Quick Actions -->
+						<div class="row">
+							<div class="col-md-12">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4><i class="fa fa-bolt"></i> Quick Actions</h4>
+									</div>
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-3 col-sm-6">
+												<a href="profile.html" class="btn btn-primary btn-lg btn-block">
+													<i class="fa fa-user"></i><br>Edit Profile
+												</a>
+											</div>
+											<div class="col-md-3 col-sm-6">
+												<a href="index.html#events" class="btn btn-info btn-lg btn-block">
+													<i class="fa fa-calendar"></i><br>View Events
+												</a>
+											</div>
+											<div class="col-md-3 col-sm-6">
+												<a href="index.html#blog" class="btn btn-success btn-lg btn-block">
+													<i class="fa fa-book"></i><br>Read Blogs
+												</a>
+											</div>
+											<div class="col-md-3 col-sm-6">
+												<a href="index.html#subscribe" class="btn btn-warning btn-lg btn-block">
+													<i class="fa fa-envelope"></i><br>Subscribe
+												</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- banner end -->
+			
+			<!-- footer -->
+			<footer class="ffoot">
+				<div class="container">
+					<p><a href="index.html">Home</a> | <a href="#work">works</a> | <a href="#team">Team</a> | <a href="#contact">Contact</a></p>
+					<div class="social">
+						<a href="#"><i class="fa fa-facebook"></i></a>
+						<a href="#"><i class="fa fa-twitter"></i></a>
+						<a href="#"><i class="fa fa-dribbble"></i></a>
+						<a href="#"><i class="fa fa-linkedin"></i></a>
+						<a href="#"><i class="fa fa-google-plus"></i></a>
+					</div>
+				</div>
+			</footer>
+
+		</div>
+		
+		
+		<!-- Javascript files -->
+		<!-- jQuery -->
+		<script src="js/jquery.js"></script>
+		<!-- Bootstrap JS -->
+		<script src="js/bootstrap.min.js"></script>
+		<!-- Respond JS for IE8 -->
+		<script src="js/respond.min.js"></script>
+		<!-- HTML5 Support for IE -->
+		<script src="js/html5shiv.js"></script>
+		<!-- Supabase Config -->
+		<script src="js/supabase-config.js"></script>
+		<!-- Session Manager -->
+		<script src="js/session-manager.js"></script>
+		<!-- Auth Module -->
+		<script src="js/auth.js"></script>
+		<!-- Custom JS -->
+		<script src="js/custom.js"></script>
+		
+		<!-- Dashboard Page Script -->
+		<script>
+			document.addEventListener('DOMContentLoaded', async function() {
+				try {
+					// Show loading state
+					const loadingDiv = document.createElement('div');
+					loadingDiv.id = 'dashboard-loading';
+					loadingDiv.className = 'text-center';
+					loadingDiv.style.cssText = 'padding: 50px; font-size: 16px;';
+					loadingDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Loading dashboard...';
+					
+					const container = document.querySelector('.container');
+					if (container) {
+						container.insertBefore(loadingDiv, container.firstChild);
+					}
+					
+					// Require authentication (now async)
+					const isAuthenticated = await authManager.requireAuth();
+					if (!isAuthenticated) {
+						return;
+					}
+					
+					const user = await authManager.getCurrentUser();
+					
+					if (!user) {
+						authManager.showMessage('Failed to load user dashboard', 'error');
+						setTimeout(() => {
+							window.location.href = 'login.html';
+						}, 2000);
+						return;
+					}
+					
+					// Remove loading state
+					if (loadingDiv.parentElement) {
+						loadingDiv.remove();
+					}
+					
+					// Populate dashboard information
+					const userName = user.user_metadata?.full_name || user.email.split('@')[0];
+					document.getElementById('dashboardUserName').textContent = userName;
+					document.getElementById('userEmail').textContent = user.email;
+					
+					// Calculate member days
+					const createdDate = new Date(user.created_at);
+					const today = new Date();
+					const memberDays = Math.floor((today - createdDate) / (1000 * 60 * 60 * 24));
+					document.getElementById('memberDays').textContent = memberDays;
+					
+					// Format dates
+					document.getElementById('memberSince').textContent = createdDate.toLocaleDateString();
+					document.getElementById('accountCreatedDate').textContent = createdDate.toLocaleDateString();
+					
+					// Handle last login date
+					if (user.last_sign_in_at) {
+						const lastLoginDate = new Date(user.last_sign_in_at);
+						document.getElementById('lastLoginDate').textContent = lastLoginDate.toLocaleDateString();
+					} else {
+						document.getElementById('lastLoginDate').textContent = 'First login';
+					}
+					
+				} catch (error) {
+					console.error('Dashboard page initialization error:', error);
+					authManager.showMessage('Failed to initialize dashboard page', 'error');
+					setTimeout(() => {
+						window.location.href = 'login.html';
+					}, 2000);
+					return;
+				}
+				
+				// Handle logout
+				const logoutBtn = document.getElementById('logoutBtn');
+				if (logoutBtn) {
+					logoutBtn.addEventListener('click', async function(e) {
+						e.preventDefault();
+						await authManager.signOut();
+					});
+				}
+			});
+		</script>
+		
+		<!-- Additional CSS for dashboard panels -->
+		<style>
+			.panel-green {
+				border-color: #5cb85c;
+			}
+			.panel-green > .panel-heading {
+				border-color: #5cb85c;
+				color: white;
+				background-color: #5cb85c;
+			}
+			.panel-green > a {
+				color: #5cb85c;
+			}
+			.panel-green > a:hover {
+				color: #3d8b3d;
+			}
+			
+			.panel-yellow {
+				border-color: #f0ad4e;
+			}
+			.panel-yellow > .panel-heading {
+				border-color: #f0ad4e;
+				color: white;
+				background-color: #f0ad4e;
+			}
+			.panel-yellow > a {
+				color: #f0ad4e;
+			}
+			.panel-yellow > a:hover {
+				color: #ec971f;
+			}
+			
+			.panel-red {
+				border-color: #d9534f;
+			}
+			.panel-red > .panel-heading {
+				border-color: #d9534f;
+				color: white;
+				background-color: #d9534f;
+			}
+			.panel-red > a {
+				color: #d9534f;
+			}
+			.panel-red > a:hover {
+				color: #c9302c;
+			}
+			
+			.huge {
+				font-size: 40px;
+			}
+			
+			.welcome-message {
+				font-size: 18px;
+				margin-bottom: 30px;
+				color: #666;
+			}
+		</style>
+	</body>	
+</html>
